@@ -1,0 +1,4 @@
+package for entity framework
+
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
