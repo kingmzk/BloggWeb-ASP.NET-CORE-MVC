@@ -1,4 +1,5 @@
 using BloggWebSite.Data;
+using BloggWebSite.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieDbConnect
 
 //// Add DbContext to services using the configured options
 //builder.Services.AddDbContext<BloggieDbContext>(ConfigureBloggieDbContext);
+
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 var app = builder.Build();
 

@@ -1,20 +1,17 @@
-﻿using BloggWebSite.Data;
-using BloggWebSite.Models.Domain;
+﻿using BloggWebSite.Models.Domain;
 using BloggWebSite.Models.ViewModels;
+using BloggWebSite.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BloggWebSite.Controllers
 {
     public class AdminTagsController : Controller
     {
-        private readonly BloggieDbContext bloggieDbContext;
-        //private readonly BloggieDbContext _bloggieDbContext;
+        private readonly ITagRepository tagRepository;
 
-        public AdminTagsController(BloggieDbContext bloggieDbContext)
+        public AdminTagsController(ITagRepository tagRepository)
         {
-            this.bloggieDbContext = bloggieDbContext;
-            //_bloggieDbContext = bloggieDbContext;
+            this.tagRepository = tagRepository;
         }
 
         [HttpGet]
@@ -22,18 +19,6 @@ namespace BloggWebSite.Controllers
         {
             return View();
         }
-
-        /*
-        [HttpPost]           //=> this appraoch is reading from incoming request
-        [ActionName("Add")]
-        public IActionResult SubmitTag()
-        {
-            var name = Request.Form["name"];
-            var DisplayName = Request.Form["DisplayName"];
-
-            return View("Add");
-        }
-        */
 
         //ModelBinding
 
@@ -48,8 +33,8 @@ namespace BloggWebSite.Controllers
                 DisplayName = addTagRequest.DisplayName
             };
 
-            await bloggieDbContext.Tags.AddAsync(tag);
-            bloggieDbContext.SaveChanges();
+            await tagRepository.AddAsync(tag);
+
             return RedirectToAction("List");
         }
 
@@ -58,7 +43,7 @@ namespace BloggWebSite.Controllers
         public async Task<IActionResult> List()
         {
             //use dbcontext to read tags
-            var tags = await bloggieDbContext.Tags.ToListAsync();
+            var tags = await tagRepository.GetAllAsync();
 
             return View(tags);
         }
@@ -66,8 +51,7 @@ namespace BloggWebSite.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            //var tag = bloggieDbContext.Tags.Find(id);   //=> 1st method
-            var tag = await bloggieDbContext.Tags.FirstOrDefaultAsync(x => x.Id == id);  //=> 2nd method
+            var tag = await tagRepository.GetAsync(id);
 
             if (tag != null)
             {
@@ -94,19 +78,15 @@ namespace BloggWebSite.Controllers
                 DisplayName = editTagRequest.DisplayName
             };
 
-            var existingTag = await bloggieDbContext.Tags.FindAsync(tag.Id);
-
-            if (existingTag != null)
+            var updatedTag = await tagRepository.UpdateAsync(tag);
+            if (updatedTag != null)
             {
-                existingTag.Name = tag.Name;
-                existingTag.DisplayName = tag.DisplayName;
-                //saving cahnges
-                await bloggieDbContext.SaveChangesAsync();
-
-                //show success Notifications
-                //return RedirectToAction("Edit", new { id = editTagRequest.Id });
-
+                //show success notification
                 return RedirectToAction("List");
+            }
+            else
+            {
+                //show error Notification
             }
 
             //show failed Notifications
@@ -116,14 +96,11 @@ namespace BloggWebSite.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest)
         {
-            var tag = await bloggieDbContext.Tags.FindAsync(editTagRequest.Id);
+            var deletedTag = await tagRepository.DeleteAsync(editTagRequest.Id);
 
-            if (tag != null)
+            if (deletedTag != null)
             {
-                bloggieDbContext.Tags.Remove(tag);
-                await bloggieDbContext.SaveChangesAsync();
-
-                //Show a success Notification
+                //show success notification
                 return RedirectToAction("List");
             }
 
@@ -132,3 +109,15 @@ namespace BloggWebSite.Controllers
         }
     }
 }
+
+/*
+ [HttpPost]           //=> this appraoch is reading from incoming request
+ [ActionName("Add")]
+ public IActionResult SubmitTag()
+ {
+     var name = Request.Form["name"];
+     var DisplayName = Request.Form["DisplayName"];
+
+     return View("Add");
+ }
+ */
