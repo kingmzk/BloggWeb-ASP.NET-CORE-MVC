@@ -1,6 +1,8 @@
-﻿namespace BloggWebSite.Models.Domain
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace BloggWebSite.Models.ViewModels
 {
-    public class BlogPost
+    public class EditBlogPostRequest
     {
         public Guid Id { get; set; }
         public string Heading { get; set; }
@@ -14,6 +16,11 @@
         public bool Visible { get; set; }
 
         //navigation property
-        public ICollection<Tag> Tags { get; set; }  //Many to Many Relationship
+        //Display Tags
+        public IEnumerable<SelectListItem> Tags { get; set; }
+
+        //Collect Tag
+        // public string SelectedTag { get; set; }     => single select
+        public string[] SelectedTags { get; set; } = Array.Empty<string>();  //=> multi select
     }
 }
