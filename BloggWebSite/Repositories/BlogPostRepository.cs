@@ -1,7 +1,6 @@
 ﻿using BloggWebSite.Data;
 using BloggWebSite.Models.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace BloggWebSite.Repositories
 {
@@ -23,8 +22,8 @@ namespace BloggWebSite.Repositories
 
         public async Task<BlogPost?> DeleteAsync(Guid id)
         {
-          var existingBlog =  await bloggieDbContext.BlogPosts.FindAsync(id);
-            if(existingBlog != null)
+            var existingBlog = await bloggieDbContext.BlogPosts.FindAsync(id);
+            if (existingBlog != null)
             {
                 bloggieDbContext.BlogPosts.Remove(existingBlog);
                 await bloggieDbContext.SaveChangesAsync();
@@ -63,7 +62,6 @@ namespace BloggWebSite.Repositories
 
                 await bloggieDbContext.SaveChangesAsync();
                 return existingBlog;
-
             }
 
             return null;

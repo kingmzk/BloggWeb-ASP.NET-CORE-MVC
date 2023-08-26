@@ -127,7 +127,6 @@ namespace BloggWebSite.Controllers
                 PublishedDate = editBlogPostRequest.PublishedDate,
                 Author = editBlogPostRequest.Author,
                 Visible = editBlogPostRequest.Visible
-
             };
             //map tags to domain mode
             var selectedTags = new List<Tag>();
@@ -163,15 +162,15 @@ namespace BloggWebSite.Controllers
         public async Task<IActionResult> Delete(EditBlogPostRequest editBlogPostRequest)
         {
             //talk to repository to delete this blog
-           var deletedBlogPost =  await blogPostRepository.DeleteAsync(editBlogPostRequest.Id);
+            var deletedBlogPost = await blogPostRepository.DeleteAsync(editBlogPostRequest.Id);
 
-            if(deletedBlogPost != null)
+            if (deletedBlogPost != null)
             {
                 return RedirectToAction("List");
             }
 
             //show error notification
-            return RedirectToAction("Edit", new {id = editBlogPostRequest.Id});
+            return RedirectToAction("Edit", new { id = editBlogPostRequest.Id });
         }
     }
 }

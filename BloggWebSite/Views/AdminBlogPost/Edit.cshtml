@@ -21,34 +21,60 @@
                 <label class="form-label">ID</label>
                 <input type="text" class="form-control" name="Id" asp-for="Id" readonly />
 
-                <label class="form-label">Heading</label>
-                <input type="text" class="form-control" name="Heading" asp-for="Heading" />
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Heading</label>
+                        <input type="text" class="form-control" name="Heading" asp-for="Heading" />
+                    </div>
 
-                <label class="form-label">Page-Title</label>
-                <input type="text" class="form-control" name="PageTitle" asp-for="PageTitle" />
+                    <div class="form-group">
+                        <label class="form-label">Page-Title</label>
+                        <input type="text" class="form-control" name="PageTitle" asp-for="PageTitle" />
+                    </div>
 
-                <label class="form-label">Content</label>
-                <textarea class="form-control" name="Content" asp-for="Content"></textarea>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-control" name="Content" id="Content" asp-for="Content"></textarea>
+                    </div>
 
+                    <div class="form-group">
+                        <label class="form-label">ShortDescription</label>
+                        <input type="text" class="form-control" name="ShortDescription" asp-for="ShortDescription" />
+                    </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Feature-Image Upload</label>
+                        <input type="file" class="form-control" id="featuredImageUpload" />
+                        @if (Model.FeaturedImageUrl != null)
+                        {
+                            <img src="@Model.FeaturedImageUrl" id="featuredImageDisplay" style="display:block;width:300px;margin-top:10px;" />
+                        }
+                        else
+                        {
+                            <img src="" id="featuredImageDisplay" style="display:block;width:300px;margin-top:10px;" />
+                        }
+                       
+                    </div>
 
-                <label class="form-label">ShortDescription</label>
-                <input type="text" class="form-control" name="ShortDescription" asp-for="ShortDescription" />
+                    <div class="form-group">
+                        <label class="form-label">Featured-Image-Url</label>
+                        <input type="text" class="form-control" name="FeaturedImageUrl" id="featuredImageUrl" asp-for="FeaturedImageUrl" />
+                    </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Url - Handle</label>
+                        <input type="text" class="form-control" name="UrlHandle" asp-for="UrlHandle" />
+                    </div>
 
-                <label class="form-label">Featured-Image-Url</label>
-                <input type="text" class="form-control" name="FeaturedImageUrl" asp-for="FeaturedImageUrl" />
+                    <div class="form-group">
+                        <label class="form-label">Published-Date</label>
+                        <input type="date" class="form-control" name="PublishedDate" asp-for="PublishedDate" />
+                    </div>
 
-
-                <label class="form-label">Url - Handle</label>
-                <input type="text" class="form-control" name="UrlHandle" asp-for="UrlHandle" />
-
-
-                <label class="form-label">Published-Date</label>
-                <input type="date" class="form-control" name="PublishedDate" asp-for="PublishedDate" />
-
-                <label class="form-label">Author</label>
-                <input type="text" class="form-control" name="Author" asp-for="Author" />
+                    <div class="form-group">
+                        <label class="form-label">Author</label>
+                        <input type="text" class="form-control" name="Author" asp-for="Author" />
+                    </div>
 
 
 
@@ -79,3 +105,48 @@
     }
 
 </div>
+
+
+@section Scripts {
+    <script>
+        var editor = new FroalaEditor('#Content', {
+            imageUploadURL: '/api/images'
+        });
+
+
+
+
+        const featuredImageUpload = document.getElementById('featuredImageUpload');
+        const featuredImageUrl = document.getElementById('featuredImageUrl');
+        const featuredImageDisplay = document.getElementById('featuredImageDisplay');
+
+        async function uploadFeaturedImage(e) {
+           // console.log(e.target.files[0]);
+
+            let data = new FormData();
+            data.append('file', e.target.files[0]);
+
+            await fetch('/api/images',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Accept': '*/*',
+                    },
+                    body: data
+
+                }).then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                    featuredImageUrl.value = result.link;
+                    featuredImageDisplay.src = result.link;
+                    featuredImageDisplay.style.display = 'block';
+                });
+        }
+
+
+        featuredImageUpload.addEventListener('change', uploadFeaturedImage)
+
+
+
+    </script>
+}
