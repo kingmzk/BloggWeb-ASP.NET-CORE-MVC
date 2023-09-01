@@ -26,15 +26,12 @@ namespace BloggWebSite.Controllers
         {
             var imageURL = await imageRepository.UploadAsync(file);
 
-            if(imageURL == null)
+            if (imageURL == null)
             {
-                return Problem("Image could not be uploaded!", null,(int)HttpStatusCode.InternalServerError);
+                return Problem("Image could not be uploaded!", null, (int)HttpStatusCode.InternalServerError);
             }
 
-            return  new JsonResult(new {link = imageURL});
-        } 
-
-
-
+            return new JsonResult(new { link = imageURL });
+        }
     }
 }
