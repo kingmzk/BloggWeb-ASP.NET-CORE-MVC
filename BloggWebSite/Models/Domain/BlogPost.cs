@@ -15,5 +15,7 @@
 
         //navigation property
         public ICollection<Tag> Tags { get; set; }  //Many to Many Relationship
+
+        public ICollection<BlogPostLike> Likes { get; set; }
     }
 }

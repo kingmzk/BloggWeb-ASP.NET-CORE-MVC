@@ -1,10 +1,12 @@
 ﻿using BloggWebSite.Models.Domain;
 using BloggWebSite.Models.ViewModels;
 using BloggWebSite.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggWebSite.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminTagsController : Controller
     {
         private readonly ITagRepository tagRepository;
