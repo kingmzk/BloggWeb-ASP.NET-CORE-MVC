@@ -56,6 +56,10 @@
                             <br/>
                             Published Date : @blogPost.PublishedDate.ToShortDateString()
                             </p>
+                            
+                            <div class="mb-3">
+                                100 likes
+                                </div>
 
                             <p class="mb-4">
                             @foreach (var tag in blogPost.Tags)
@@ -65,12 +69,14 @@
                             </p>
                         <p class="mb-5">
                             @blogPost.ShortDescription</p>
-                        <a class="btn btn-dark" 
-                        asp-area =""
-                        asp-controller="Blogs"
-                        asp-action="Index"
-                        asp-route-urlHandle="@blogPost.UrlHandle"
-                        >Read More</a>
+                     @*   <a class="btn btn-dark"
+                           asp-area=""
+                           asp-controller="Blogs"
+                           asp-action="Index"
+                           asp-route-urlHandle="@blogPost.UrlHandle">Read More</a> *@
+
+                        <a class="btn btn-dark" href="/Blogs/Index?urlHandle=@blogPost.UrlHandle">Read More</a>
+
                         </div>
                 }
             }

@@ -65,7 +65,7 @@ namespace BloggWebSite.Controllers
 
             if (signInResult != null && signInResult.Succeeded)
             {
-                if (string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                if (!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
                 {
                     return Redirect(loginViewModel.ReturnUrl);
                 }
