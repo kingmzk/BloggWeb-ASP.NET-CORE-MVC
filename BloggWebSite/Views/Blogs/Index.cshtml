@@ -1,6 +1,7 @@
 ﻿
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
 
 @model BloggWebSite.Models.ViewModels.BlogDetailsViewModel
 
@@ -29,11 +30,22 @@
                 <div class="mb-3">
                     @if(signInManager.IsSignedIn(User))
                     {
-                        <a>
-                            <i class="bi bi-hand-thumbs-up-fill"></i>
-                        </a>
+                        if(Model.Liked)
+                        {
+
+                            <a style="cursor:pointer">
+                                <i class="bi bi-hand-thumbs-up-fill"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a id="btnLike" style="cursor:pointer">
+                                <i class="bi bi-hand-thumbs-up-fill "></i>
+                            </a>
+                        }
+                      
                     }
-                    <span>@Model.TotalLikes</span> Likes
+                    <span id="totalLikes">@Model.TotalLikes</span> Likes
                  </div>
                        
 
@@ -61,6 +73,187 @@
         </div>
 
     </div>
-
-
 </div>
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        const blogPostId = '@Model.Id';
+        const userId = '@userManager.GetUserId(User)';
+
+        // Function to fetch and update the total likes
+        async function getTotalLikes() {
+            try {
+                const response = await fetch(`/api/BlogPostLike/${blogPostId}/totalLikes`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const totalLikeElement = document.getElementById("totalLikes");
+                    totalLikeElement.innerHTML = result;
+                } else {
+                    console.error(`Failed to fetch total likes. Status code: ${response.status}`);
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+
+        async function disableLikeButton() {
+            const btnLike = document.getElementById("btnLike");
+            btnLike.classList.add("disabled"); // Add a CSS class for disabled appearance
+            btnLike.removeAttribute("style"); // Remove the cursor:pointer style
+            btnLike.removeEventListener("click", addLikeForBlog); // Remove the click event listener
+        }
+
+        // Function to add a like for the blog post
+        async function addLikeForBlog() {
+            try {
+                const response = await fetch("/api/BlogPostLike/Add", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                    },
+                    body: JSON.stringify({
+                        blogPostId,
+                        userId
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("Like added successfully.");
+                    // Disable the button after liking
+                    //  document.getElementById("btnLike").disabled = true;
+                    disableLikeButton();
+                    // Update the total likes count
+                    getTotalLikes();
+                } else {
+                    console.error("Failed to add like.");
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+
+        // Call getTotalLikes when the DOM has loaded to initialize the total likes
+        document.addEventListener("DOMContentLoaded", getTotalLikes);
+
+        // Attach the click event listener to the button
+        document.getElementById("btnLike").addEventListener("click", addLikeForBlog);
+    </script>
+}
+
+
+
+
+@*
+@section Scripts
+    {
+    <script>
+        const btnLikeElement = document.getElementById("btnLike");
+
+        async function addLikeForBlog() {
+            try {
+                const response = await fetch("/api/BlogPostLike/Add", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                    },
+                    body: JSON.stringify({
+                        blogPostId: '@Model.Id',
+                        userId: '@userManager.GetUserId(User)'
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("Like added successfully.");
+                } else {
+                    console.error("Failed to add like.");
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+
+        btnLikeElement.addEventListener("click", addLikeForBlog);
+    </script>
+}
+
+
+
+
+@section Scripts {
+    <script>
+        const btnLikeElement = document.getElementById("btnLike");
+        const totalLikeElement = document.getElementById("totalLikes");
+        
+        async function getTotalLikes() {
+            try {
+                const response = await fetch(`/api/BlogPostLike/${@Model.Id}/totalLikes`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    totalLikeElement.innerHTML = result;
+                } else {
+                    console.error(`Failed to fetch total likes. Status code: ${response.status}`);
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+        
+        async function addLikeForBlog() {
+            try {
+                const response = await fetch("/api/BlogPostLike/Add", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                    },
+                    body: JSON.stringify({
+                        blogPostId: '@Model.Id',
+                        userId: '@userManager.GetUserId(User)'
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("Like added successfully.");
+                 //   btnLikeElement.disabled = true; // Disable the button after liking
+                //    getTotalLikes();
+                } else {
+                    console.error("Failed to add like.");
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+
+        // Attach the click event listener to the button
+        btnLikeElement.addEventListener("click", addLikeForBlog);
+
+        // Call getTotalLikes when the page loads to initialize the total likes
+        getTotalLikes();
+    </script>
+}
+
+
+*@

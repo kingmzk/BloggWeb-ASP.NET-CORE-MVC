@@ -18,5 +18,7 @@ namespace BloggWebSite.Models.ViewModels
         public ICollection<Tag> Tags { get; set; }
 
         public int TotalLikes { get; set; }
+
+        public bool Liked { get; set; }
     }
 }
