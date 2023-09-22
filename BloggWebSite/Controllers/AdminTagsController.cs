@@ -28,7 +28,15 @@ namespace BloggWebSite.Controllers
         [ActionName("Add")]
         public async Task<IActionResult> Add(AddTagRequest addTagRequest)
         {
+            //custom validation here
+            ValidateAddTagRequest(addTagRequest);
             //we are mapping AddRequest to tag domainModel
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
             var tag = new Tag
             {
                 Name = addTagRequest.Name,
@@ -108,6 +116,17 @@ namespace BloggWebSite.Controllers
 
             //show an error Notification
             return RedirectToAction("Edit", new { id = editTagRequest.Id });
+        }
+
+        private void ValidateAddTagRequest(AddTagRequest request)
+        {
+            if (request.Name is not null && request.DisplayName is not null)
+            {
+                if (request.Name == request.DisplayName)
+                {
+                    ModelState.AddModelError("DisplayName", "Name cannot be  same as Display Name");
+                }
+            }
         }
     }
 }
